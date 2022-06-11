@@ -14,7 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -44,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!input.isEmpty()) {
                     stringObservable = Observable.just(input);
-
                     stringObservable
                             .subscribeOn(Schedulers.io())
                             .map(new Function<String, Spanned>() {
@@ -58,8 +61,32 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(observer);
                 }
             }
         });
     }
+
+    private final Observer<Spanned> observer = new Observer<Spanned>() {
+        @Override
+        public void onSubscribe(@NonNull Disposable d) {
+
+        }
+
+        @Override
+        public void onNext(@NonNull Spanned spanned) {
+            tvOutput.setText(spanned);
+        }
+
+        @Override
+        public void onError(@NonNull Throwable e) {
+
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    };
 }
